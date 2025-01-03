@@ -9,8 +9,9 @@ def readProps(prefsLoc):
     config.read(prefsLoc)
     version = dict(config.items("VERSION"))
     verObj = dict(
-        short="{}.{}.{}".format(version["major"], version["minor"], version["build"]),
+        short=f"{version["major"]}.{version["minor"]}.{version["build"]}",
         long="unset",
+        rpm="unset",  # https://docs.fedoraproject.org/en-US/packaging-guidelines/Versioning/
     )
 
     # Try to find current build SHA if if the workspace is clean.  This could fail if git is not installed
@@ -27,13 +28,13 @@ def readProps(prefsLoc):
         # if isDirty:
         #     # short for 'dirty', we want to keep our verstrings source for protobuf reasons
         #     suffix = sha + "-d"
-        verObj["long"] = "{}.{}.{}.{}".format(
-            version["major"], version["minor"], version["build"], suffix
-        )
+        verObj["long"] = f"{verObj["short"]}.{suffix}"
+        verObj["rpm"] = f"{verObj["short"]}^1.git{sha}"
     except:
         # print("Unexpected error:", sys.exc_info()[0])
         # traceback.print_exc()
         verObj["long"] = verObj["short"]
+        verObj["rpm"] = verObj["short"]
 
     # print("firmware version " + verStr)
     return verObj
