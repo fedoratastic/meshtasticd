@@ -1,6 +1,12 @@
 name: Build Docker
 
-on: workflow_call
+on:
+  workflow_call:
+    inputs:
+      release_channel:
+        description: Release channel to target
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -18,34 +24,70 @@ jobs:
           repository: ${{github.event.pull_request.head.repo.full_name}}
 
       - name: Get release version string
-        run: echo "long=$(./bin/buildinfo.py long)" >> $GITHUB_OUTPUT
+        run: |
+          echo "long=$(./bin/buildinfo.py long)" >> $GITHUB_OUTPUT
+          echo "short=$(./bin/buildinfo.py short)" >> $GITHUB_OUTPUT
         id: version
 
+      - name: Enumerate tags
+        shell: python
+        run: |
+          import os
+
+          short = "${{ steps.version.outputs.short }}"
+          long = "${{ steps.version.outputs.long }}"
+          release_channel = "${{ inputs.release_channel }}"
+          tags = {
+            "beta": {
+              "debian": [
+                f"{short}", f"{long}", f"{short}-beta", f"{long}-beta", "beta", "latest",
+                f"{short}-debian", f"{long}-debian", f"{short}-beta-debian", f"{long}-beta-debian", "beta-debian"
+              ],
+              "alpine": [
+                f"{short}-alpine", f"{long}-alpine", f"{short}-beta-alpine", f"{long}-beta-alpine", "beta-alpine"
+              ]
+            },
+            "alpha": {
+              "debian": [
+                f"{short}-alpha", f"{long}-alpha", "alpha",
+                f"{short}-alpha-debian", f"{long}-alpha-debian", "alpha-debian"
+              ],
+              "alpine": [
+                f"{short}-alpha-alpine", f"{long}-alpha-alpine", "alpha-alpine"
+              ]
+            },
+            "daily": {
+              "debian": ["daily", "daily-debian"],
+              "alpine": ["daily-alpine"]
+            }
+          }
+
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+            fh.write(f"debian={','.join(tags[release_channel]['debian'])}\n")
+            fh.write(f"alpine={','.join(tags[release_channel]['alpine'])}\n")
+        id: tags
+
       - name: Docker login
-        if: ${{ github.event_name != 'pull_request_target' && github.event_name != 'pull_request' }}
         uses: docker/login-action@v3
         with:
           username: meshtastic
           password: ${{ secrets.DOCKER_FIRMWARE_TOKEN }}
 
       - name: Docker setup
-        if: ${{ github.event_name != 'pull_request_target' && github.event_name != 'pull_request' }}
         uses: docker/setup-buildx-action@v3
 
-      - name: Docker build and push tagged versions
-        if: ${{ github.event_name == 'workflow_dispatch' }}
+      - name: Docker build and push (Debian)
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
           push: true
-          tags: meshtastic/meshtasticd:${{ steps.version.outputs.long }}
+          tags: ${{ steps.tags.outputs.debian }}
 
-      - name: Docker build and push
-        if: ${{ github.ref == 'refs/heads/master' && github.event_name != 'pull_request_target' && github.event_name != 'pull_request' }}
+      - name: Docker build and push (Alpine)
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./Dockerfile
+          file: ./alpine.Dockerfile
           push: true
-          tags: meshtastic/meshtasticd:latest
+          tags: ${{ steps.tags.outputs.alpine }}
