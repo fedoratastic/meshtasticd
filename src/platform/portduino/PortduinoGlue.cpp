@@ -440,6 +440,11 @@ bool loadConfig(const char *configPath)
                 Serial1.setPath(serialPath);
                 settingsMap[has_gps] = 1;
             }
+            std::string gpsMethod = yamlConfig["GPS"]["Method"].as<std::string>("");
+            if (gpsMethod == "gpsd") {
+                settingsMap[has_gps] = 1;
+                settingsStrings[gpsMethod] = "gpsd";
+            }
         }
         if (yamlConfig["I2C"]) {
             settingsStrings[i2cdev] = yamlConfig["I2C"]["I2CDevice"].as<std::string>("");

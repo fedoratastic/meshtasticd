@@ -11,6 +11,10 @@
 #include "input/UpDownInterruptImpl1.h"
 #include "modules/PositionModule.h"
 
+#ifdef ARCH_PORTDUINO
+#include <libgpsmm.h>
+#endif
+
 // Allow defining the polarity of the ENABLE output.  default is active high
 #ifndef GPS_EN_ACTIVE
 #define GPS_EN_ACTIVE 1
