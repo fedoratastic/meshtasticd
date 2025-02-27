@@ -197,6 +197,8 @@ void portduinoSetup()
             }
         }
     }
+    if (settingsStrings[vfs_directory] != "") {
+    }
     // if we're using a usermode driver, we need to initialize it here, to get a serial number back for mac address
     uint8_t dmac[6] = {0};
     if (settingsStrings[spidev] == "ch341") {
@@ -536,6 +538,7 @@ bool loadConfig(const char *configPath)
             settingsMap[maxnodes] = (yamlConfig["General"]["MaxNodes"]).as<int>(200);
             settingsMap[maxtophone] = (yamlConfig["General"]["MaxMessageQueue"]).as<int>(100);
             settingsStrings[config_directory] = (yamlConfig["General"]["ConfigDirectory"]).as<std::string>("");
+            settingsStrings[vfs_directory] = (yamlConfig["General"]["VFSDirectory"]).as<std::string>("");
             if ((yamlConfig["General"]["MACAddress"]).as<std::string>("") != "" &&
                 (yamlConfig["General"]["MACAddressSource"]).as<std::string>("") != "") {
                 std::cout << "Cannot set both MACAddress and MACAddressSource!" << std::endl;
