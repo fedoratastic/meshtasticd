@@ -15,7 +15,7 @@
 #define RF95_FAN_EN 17
 
 // #define LED_PIN 16 // This is a LED_WS2812 not a standard LED
-#define HAS_NEOPIXEL                         // Enable the use of neopixels
+#define HAS_NEOPIXEL 1                       // Enable the use of neopixels
 #define NEOPIXEL_COUNT 1                     // How many neopixels are connected
 #define NEOPIXEL_DATA 16                     // gpio pin used to send data to the neopixels
 #define NEOPIXEL_TYPE (NEO_GRB + NEO_KHZ800) // type of neopixels in use
