@@ -3,7 +3,7 @@
 
 #define LED_PIN 15 // If defined we will blink this LED
 
-#define HAS_NEOPIXEL                         // Enable the use of neopixels
+#define HAS_NEOPIXEL 1                       // Enable the use of neopixels
 #define NEOPIXEL_COUNT 3                     // How many neopixels are connected
 #define NEOPIXEL_DATA 10                     // gpio pin used to send data to the neopixels
 #define NEOPIXEL_TYPE (NEO_GRB + NEO_KHZ800) // type of neopixels in use

@@ -73,7 +73,7 @@ extern "C" {
 #define LED_BUILTIN LED_GREEN
 #define LED_STATE_ON 0 // State when LED is lit
 
-#define HAS_NEOPIXEL                         // Enable the use of neopixels
+#define HAS_NEOPIXEL 1                       // Enable the use of neopixels
 #define NEOPIXEL_COUNT 2                     // How many neopixels are connected
 #define NEOPIXEL_DATA 14                     // gpio pin used to send data to the neopixels
 #define NEOPIXEL_TYPE (NEO_GRB + NEO_KHZ800) // type of neopixels in use

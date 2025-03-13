@@ -54,7 +54,7 @@
   look at BUTTON1_COLOR, BUTTON1_COLOR_INDEX, BUTTON2_COLOR and BUTTON2_COLOR_INDEX
   this is done here for now.
 */
-#define HAS_NEOPIXEL                         // Enable the use of neopixels
+#define HAS_NEOPIXEL 1                       // Enable the use of neopixels
 #define NEOPIXEL_COUNT 6                     // How many neopixels are connected
 #define NEOPIXEL_DATA 15                     // GPIO pin used to send data to the neopixels
 #define NEOPIXEL_TYPE (NEO_GRB + NEO_KHZ800) // Type of neopixels in use

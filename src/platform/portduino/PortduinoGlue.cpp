@@ -517,6 +517,15 @@ bool loadConfig(const char *configPath)
                 }
             }
         }
+        if (yamlConfig["LED"]) {
+            if (yamlConfig["LED"]["NeoPixel"]) {
+                settingsMap[has_neopixel] = 1;
+                settingsMap[neo_count] = yamlConfig["LED"]["NeoPixel"]["Count"].as<int>(1);
+                settingsMap[neo_data] = yamlConfig["LED"]["NeoPixel"]["Pin"].as<int>(RADIOLIB_NC);
+                settingsStrings[neo_colormode] = yamlConfig["LED"]["NeoPixel"]["ColorMode"].as<std::string>("RGB");
+                settingsStrings[neo_type] = yamlConfig["LED"]["NeoPixel"]["Type"].as<std::string>("");
+            }
+        }
         if (yamlConfig["Input"]) {
             settingsStrings[keyboardDevice] = (yamlConfig["Input"]["KeyboardDevice"]).as<std::string>("");
             settingsStrings[pointerDevice] = (yamlConfig["Input"]["PointerDevice"]).as<std::string>("");
