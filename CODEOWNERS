@@ -1,0 +1,49 @@
+# People marked here will be automatically requested for a review
+# when the code that they own is touched.
+
+# Teams:
+# @meshtastic/core
+# @meshtastic/devops
+# @meshtastic/hardware
+# @meshtastic/packaging
+
+# Fuzzer
+.clusterfuzzlite/* @esev
+
+# DevOps stuff
+.devcontainer/* @meshtastic/devops
+.github/* @meshtastic/devops
+.trunk/* @meshtastic/devops
+.vscode/* @meshtastic/devops
+.gitpod.yml @meshtastic/devops
+CODEOWNERS @meshtastic/devops
+
+# Build Scripts
+bin/* @meshtastic/devops
+
+# Source code
+arch/* @meshtastic/core
+extra_scripts/* @meshtastic/core
+monitor/* @meshtastic/core
+src/* @meshtastic/core
+test/* @meshtastic/core
+partition-table.csv @meshtastic/core
+platformio.ini @meshtastic/core
+userPrefs.jsonc @meshtastic/core
+
+# Linux - Debian
+debian/* @meshtastic/packaging
+
+# Linux - Docker
+.dockerignore @meshtastic/packaging
+*.env* @meshtastic/packaging
+*Dockerfile* @meshtastic/packaging
+docker-compose.yml @meshtastic/packaging
+
+# Linux - Fedora
+*.rpkg @meshtastic/packaging
+rpkg.conf @meshtastic/packaging
+
+# Variant hell
+boards/* @meshtastic/hardware
+variants/* @meshtastic/hardware
