@@ -197,6 +197,53 @@ void portduinoSetup()
             }
         }
     }
+
+    // If a LoRa radio is not configured,
+    // attempt to auto config based on Product Strings
+    if (settingsMap[has_lora] != true) {
+        char autoconf_product[96] = {0};
+        std::cout << "autoconf: LoRa config not found. Attempting to auto-configure..." << std::endl;
+        // Try CH341
+        try {
+            std::cout << "autoconf: Looking for CH341 device..." << std::endl;
+            ch341Hal =
+                new Ch341Hal(0, settingsStrings[lora_usb_serial_num], settingsMap[lora_usb_vid], settingsMap[lora_usb_pid]);
+            ch341Hal->getProductString(autoconf_product, 95);
+            delete ch341Hal;
+            std::cout << "autoconf: Found CH341 device " << autoconf_product << std::endl;
+        } catch (...) {
+            std::cout << "autoconf: Could not locate CH341 device" << std::endl;
+        }
+        // Try Pi HAT+
+        std::cout << "autoconf: Looking for Pi HAT+..." << std::endl;
+        if (access("/proc/device-tree/hat/product", R_OK) == 0) {
+            strncpy(autoconf_product, "/proc/device-tree/hat/product", 95);
+            std::cout << "autoconf: Found Pi HAT+ at /proc/device-tree/hat/product" << std::endl;
+        } else {
+            std::cout << "autoconf: Could not locate Pi HAT+ at /proc/device-tree/hat/product" << std::endl;
+        }
+        // Load the config file based on the product string
+        if (strlen(autoconf_product) > 0) {
+            // From configProducts map in PortduinoGlue.h
+            std::string product_config = "";
+            try {
+                product_config = configProducts.at(autoconf_product);
+            } catch (std::out_of_range &e) {
+                std::cerr << "autoconf: Unable to find config for " << autoconf_product << std::endl;
+                exit(EXIT_FAILURE);
+            }
+            if (loadConfig(("/etc/meshtasticd/available.d/" + product_config).c_str())) {
+                std::cout << "autoconf: Using " << product_config << " as config file for " << autoconf_product << std::endl;
+            } else {
+                std::cerr << "autoconf: Unable to use " << product_config << " as config file for " << autoconf_product
+                          << std::endl;
+                exit(EXIT_FAILURE);
+            }
+        } else {
+            std::cerr << "autoconf: Could not locate any devices" << std::endl;
+        }
+    }
+
     // if we're using a usermode driver, we need to initialize it here, to get a serial number back for mac address
     uint8_t dmac[6] = {0};
     if (settingsStrings[spidev] == "ch341") {
@@ -367,6 +414,7 @@ bool loadConfig(const char *configPath)
                 for (auto &loraModule : loraModules) {
                     if (yamlConfig["Lora"]["Module"].as<std::string>("") == loraModule.strName) {
                         settingsMap[loraModule.cfgName] = true;
+                        settingsMap[has_lora] = true;
                         break;
                     }
                 }

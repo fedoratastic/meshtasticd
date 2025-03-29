@@ -1,11 +1,21 @@
 #pragma once
 #include <fstream>
 #include <map>
+#include <unordered_map>
 
 #include "platform/portduino/USBHal.h"
 
+// Product strings for auto-configuration
+// {"PRODUCT_STRING", "CONFIG.YAML"}
+// YAML paths are relative to `meshtastic/available.d`
+inline const std::unordered_map<std::string, std::string> configProducts = {{"MESHTOAD", "lora-usb-meshtoad-e22.yaml"},
+                                                                            {"MESHSTICK", "lora-meshstick-1262.yaml"},
+                                                                            {"MESHADV-PI", "lora-MeshAdv-900M30S.yaml"},
+                                                                            {"POWERPI", "lora-MeshAdv-900M30S.yaml"}};
+
 enum configNames {
     default_gpiochip,
+    has_lora,
     cs_pin,
     cs_line,
     cs_gpiochip,
