@@ -1,0 +1,64 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    ":dependencyDashboard",
+    ":semanticCommitTypeAll(chore)",
+    ":ignoreModulesAndTests",
+    "group:recommended",
+    "replacements:all",
+    "workarounds:all"
+  ],
+  "forkProcessing": "enabled",
+  "ignoreDeps": ["protobufs"],
+  "git-submodules": {
+    "enabled": true
+  },
+  "commitMessageTopic": "{{depName}}",
+  "labels": ["dependencies"],
+  "customDatasources": {
+    "pio": {
+      "defaultRegistryUrlTemplate": "https://api.registry.platformio.org/v3/packages/{{packageName}}",
+      "format": "json",
+      "transformTemplates": [
+        "{\"releases\": [$map($.versions, function($v) { { \"version\": $v.name, \"releaseTimestamp\": $v.released_at } })] }"
+      ]
+    }
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Match meshtastic/web version",
+      "fileMatch": ["bin/web.version"],
+      "matchStrings": ["(?<currentValue>.+)$"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "meshtastic/web",
+      "versioningTemplate": "semver-coerced"
+    },
+    {
+      "customType": "regex",
+      "description": "Match normal PIO dependencies",
+      "fileMatch": [".*\\.ini$"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>.*?)(?: depName=(?<depName>.+?))? packageName=(?<packageName>.+?)(?: versioning=(?<versioning>[a-z-]+?))?\\s+?.+?@(?<currentValue>.+?)\\s"
+      ]
+    },
+    {
+      "customType": "regex",
+      "description": "Match PIO zipped dependencies with git tag ref",
+      "fileMatch": [".*\\.ini$"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>.*?)(?: depName=(?<depName>.+?))? packageName=(?<packageName>.+?)(?: versioning=(?<versioning>[a-z-]+?))\\s+?https:\/\/.+?archive\/(?<currentValue>.+?).zip\\s"
+      ]
+    },
+    {
+      "customType": "regex",
+      "description": "Match PIO zipped dependencies with git commit ref",
+      "fileMatch": [".*\\.ini$"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>.*?)(?: depName=(?<depName>.+?))? packageName=(?<packageName>.+?)(?: versioning=(?<versioning>[a-z-]+?)) gitBranch=(?<gitBranch>.+?)\\s+?https:\/\/.+?archive\/(?<currentDigest>.+?).zip\\s"
+      ],
+      "currentValueTemplate": "{{{gitBranch}}}"
+    }
+  ],
+  "packageRules": []
+}
