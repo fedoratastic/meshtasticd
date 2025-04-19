@@ -30,6 +30,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     gnupg2 \
     libusb-1.0-0-dev \
     libuv1-dev \
+    libgeoclue-2-dev \
     libi2c-dev \
     libxcb-xkb-dev \
     libxkbcommon-dev \
